@@ -67,7 +67,7 @@ object ClassRepository {
             val divs = doc.select("div[class*=card]")
             for (div in divs) {
                 val title = div.select("h4, h5, .title").text()
-                val date = div.select(".date, span:matches(\d)").text()
+                val date = div.select(".date, span:matches(\\d)").text()
                 val links = div.select("a")
                 var videoUrl: String? = null
                 var noteUrl: String? = null
