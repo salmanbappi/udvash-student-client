@@ -13,3 +13,9 @@ data class UserProfile(
     val name: String,
     val regNo: String
 )
+
+data class CourseContentItem(
+    val title: String,
+    val iconUrl: String,
+    val link: String
+)

@@ -25,8 +25,8 @@ data class DashboardItem(val title: String, val icon: ImageVector, val route: St
 fun DashboardScreen(navController: NavController) {
     val items = listOf(
         DashboardItem("Past Classes", Icons.Default.History, Screen.PastClasses.route),
+        DashboardItem("Course & Content", Icons.Default.Book, Screen.CourseContent.route),
         DashboardItem("Live Class", Icons.Default.LiveTv),
-        DashboardItem("Class Notes", Icons.Default.Book),
         // Add more items as needed
     )
 

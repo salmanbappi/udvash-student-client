@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="" />
+<meta name="keywords" content="Udvash,Unmesh,Online Education,Online Exam,Online Class,Online Admission" />
+<meta name="author" content="Udvash-Unmesh Shikkha Poribar" />
+<meta name="application-name" content="Udvash-Unmesh Online Portal" />
+
+        <title>Student Login-Password - Udvash Unmesh Online V-47.210.3</title>
+
+<!-- ----------------------------------------------------------------
+    Fonts load from google
+----------------------------------------------------------------- -->
+
+<link rel="icon" href="/Content/UmsTheme/assets/images/favicon.png" sizes="32x32">
+<link rel="icon" href="/Content/UmsTheme/assets/images/favicon.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/Content/UmsTheme/assets/images/favicon.png">
+<meta name="msapplication-TileImage" content="/Content/UmsTheme/assets/images/favicon.png">
+
+<!-- ----------------------------------------------------------------
+    Fonts load from google
+----------------------------------------------------------------- -->
+
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,300&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<!-- ----------------------------------------------------------------
+    Page Stylesheets
+----------------------------------------------------------------- -->
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" href="/Content/UmsTheme/assets/lib/bootstrap/bootstrap.min.css">
+
+<!-- Fontawesome -->
+<link rel="stylesheet" type="text/css" href="/Content/UmsTheme/assets/lib/fontawesome/css/all.min.css">
+
+<!-- Skin -->
+<link rel="stylesheet" type="text/css" href="/Content/UmsTheme/assets/css/skin-udvash.css?v=180">
+
+<!-- Style -->
+<link rel="stylesheet" type="text/css" href="/Content/UmsTheme/assets/css/style.css?v=180">
+
+<!-- Custom -->
+<link rel="stylesheet" type="text/css" href="/Content/UmsTheme/assets/css/custom.css?v=180">
+
+
+<!-- jQuery -->
+<script type="text/javascript" src="/Content/UmsTheme/assets/js/jquery.min.js"></script>
+<!-- Main -->
+<script type="text/javascript" src="/Content/UmsTheme/assets/js/main.js?v=180"></script>
+
+<script type="text/javascript">
+    $(document).ajaxComplete(function (xhr, status) {
+        if (status.getResponseHeader("X-Responded-JSON") != null) {
+            var obj = jQuery.parseJSON(status.getResponseHeader("X-Responded-JSON"));
+            if (obj.status == 401) {
+                //window.location.assign(obj.headers['location']);
+                window.location.assign(obj.headers['location'].substr(0, obj.headers['location'].indexOf('?')));
+            }
+        }
+    });
+
+    function mobileCheck(mobileNumber) {
+        mobileNumber = mobileNumber.replace(/\W+/g, "");
+        var chkVal = mobileNumber.match(/^(?:\+?88)?0?1[13-9]\d{8}$/);
+        if (chkVal != null) {
+            if (mobileNumber.length == 11) {
+                chkVal = '88' + chkVal;
+            }
+            else if (mobileNumber.length == 10) {
+                chkVal = '880' + chkVal;
+            }
+            var chkVal = mobileNumber.match(/^(?:\+?88)?01[13-9]\d{8}$/);
+            if (chkVal != null) {
+                if (mobileNumber.length == 11) {
+                    chkVal = '88' + chkVal;
+                }
+                else if (mobileNumber.length == 10) {
+                    chkVal = '880' + chkVal;
+                }
+            }
+            //alert(chkVal);
+        }
+        return chkVal;
+    }
+
+    function nickNameCheck(nickName) {
+        var chkVal = nickName.match(/^[a-zA-Z .-`]$/);
+        return chkVal;
+    }
+
+    //This function is used for remove other char without numeric for text field
+    function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
+
+    if (!String.prototype.trim) {
+        String.prototype.trim = function () {
+            return this.replace(/^\s+|\s+$/g, '');
+        };
+    }
+
+    function showErrorMessageBelowCtrl(ctrlId, message, show) {
+
+        var divHtml = '<div style="color:red;" id="' + ctrlId + '_err_div" >' + message + '</div>';
+
+        if (show == true) {
+            $('#' + ctrlId).addClass("highlight");
+            $('#' + ctrlId).after(divHtml);
+        } else {
+            $('#' + ctrlId).removeClass("highlight");
+            $('#' + ctrlId + '_err_div').remove();
+        }
+    }
+
+    function validateTextField(controlId, errorMessage) {
+
+        $(document).on("input propertychange", "#" + controlId, function (event) {
+
+            var value = $("#" + controlId).val().trim();
+
+            if (value.length == 0) {
+                showErrorMessageBelowCtrl(controlId, "", false);
+                showErrorMessageBelowCtrl(controlId, errorMessage, true);
+                return false;
+            } else {
+                showErrorMessageBelowCtrl(controlId, "", false);
+            }
+        });
+    }
+
+    function validateDropDownField(controlId, targetId, errorMessage) {
+
+        $(document).on("change", "#" + controlId, function (event) {
+
+            var val = $("#" + targetId).val();
+            if (val.length == 0) {
+                //showErrorMessageBelowCtrl(controlId, "", false);
+                showErrorMessageBelowCtrl(controlId, errorMessage, true);
+            } else {
+                showErrorMessageBelowCtrl(controlId, "", false);
+            }
+        });
+    }
+
+    function validateDropDownField(controlId, errorMessage) {
+
+        $(document).on("change", "#" + controlId, function (event) {
+
+            var val = $("#" + controlId).val();
+            if (val.length == 0) {
+                showErrorMessageBelowCtrl(controlId, "", false);
+                showErrorMessageBelowCtrl(controlId, errorMessage, true);
+            } else {
+                showErrorMessageBelowCtrl(controlId, "", false);
+            }
+        });
+    }
+
+    function validateListField(controlId, errorMessage) {
+
+        $(document).on("change", "#" + controlId, function (event) {
+            var val = $("#" + controlId).val();
+            if (val == null || val.length == 0) {
+                showErrorMessageBelowCtrl(controlId, "", false);
+                showErrorMessageBelowCtrl(controlId, errorMessage, true);
+            } else {
+                showErrorMessageBelowCtrl(controlId, "", false);
+            }
+        });
+    }
+
+    function scrollToElement(selector) {
+        var s = $(selector);
+        if (s != undefined)
+            $(document.body).scrollTop($(selector).offset().top - 120);
+    }
+
+    $(document).ready(function () {
+
+        $("select").change(function () {
+            if ($(this).val() != "") {
+                $(this).parent().find(".field-validation-error-count").remove();
+                $(this).next('span').empty();
+            }
+
+            else {
+                //$(this).parent().find(".field-validation-error-count").remove();
+                $(this).parent().remove("span");
+                $(this).parent().append("<span class='text-danger field-validation-error' style='color:red'></span>");
+            }
+        });
+
+        $(document).on("input propertychange", ".numbersOnly", function (event) {
+            var valStr = $(this).val();
+            var id = $(this).attr("id");
+            var val = parseInt(valStr);
+            showErrorMessageBelowCtrl(id, "", false);
+            if (isNaN(val)) {
+                $(this).val("");
+            }
+            else if (val < 0) {
+                $(this).val("");
+                showErrorMessageBelowCtrl(id, "Please enter valid amount", true);
+            } else {
+                $(this).val(val);
+            }
+        });
+    });
+</script>
+<script>
+    const userAgentGlobal = navigator.userAgent || navigator.vendor || window.opera;
+    const isiOS = /iPhone|iPad|iPod/i.test(userAgentGlobal) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/i.test(userAgentGlobal);
+    const isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/.test(navigator.platform) && !isiOS;
+    const isLinux = /Linux/.test(navigator.platform) && !isiOS && !isAndroid && !isMacOS;
+    const isDesktop = !isiOS && !isAndroid && !isMacOS && !isLinux;
+    var appApiKeyGlobal = getCookie("appApiKey");
+    var studentNameGlobal = getCookie("studentName");
+    var userTypeGlobal = 'student';
+    var appVersionGlobal = "";
+    var returnUrlGlobal = getCookie("AppExamReturnUrl");
+
+    function extractVersion(str) {
+        const match = str.match(/\d+(\.\d+)+/);
+        return match ? match[0] : null;
+    }
+
+    function compareVersions(v1, v2) {
+        const parts1 = extractVersion(v1).split('.').map(Number);
+        const parts2 = extractVersion(v2).split('.').map(Number);
+
+        for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+            const num1 = parts1[i] || 0;
+            const num2 = parts2[i] || 0;
+            if (num1 < num2) return -1;
+            if (num1 > num2) return 1;
+        }
+        return 0;
+    }
+
+    function isVersionGreater(v1, v2) {
+        return compareVersions(v1, v2) === 1;
+    }
+
+    function isVersionLower(v1, v2) {
+        return compareVersions(v1, v2) === -1;
+    }
+
+    function isVersionEqual(v1, v2) {
+        return compareVersions(v1, v2) === 0;
+    }
+
+    function getUserData() {
+        return new Promise((resolve, reject) => {
+            if (isAndroid) {
+                try {
+                    const userDataJson = Android.GetUserData();
+                    const userData = JSON.parse(userDataJson);
+                    resolve(userData);
+                } catch (error) {
+                    reject("Android GetUserData failed: " + error);
+                }
+            } else if (isiOS) {
+                try {
+                    window.receiveGetUserData = function (escapedJsonString) {
+                        try {
+                            const userData = JSON.parse(escapedJsonString);
+                            resolve(userData);
+                        } catch (err) {
+                            reject("JSON parse error: " + err);
+                        }
+                    };
+                    window.webkit.messageHandlers.GetUserData.postMessage(null);
+                } catch (error) {
+                    reject("iOS GetUserData call failed: " + error);
+                }
+            } else {
+                reject("Unsupported platform");
+            }
+        });
+    }
+
+    function setUserData(apiKey, regNo, studentName, userType) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (isAndroid) {
+                    if ((dataSiteName == 'udvash-unmesh' && isVersionLower(appVersionGlobal, "1.0.8")) || (dataSiteName == 'uttoron' && isVersionLower(appVersionGlobal, "1.0.3"))) {
+                        Android.SetUserData(apiKey, regNo, studentName);
+                    } else {
+                        Android.SetUserData(apiKey, regNo, studentName, userType);
+                    }
+                    resolve();
+                } else if (isiOS) {
+                    window.webkit.messageHandlers.SetUserData.postMessage({
+                        apiKey: apiKey,
+                        regNo: regNo,
+                        studentName: studentName,
+                        userType: userType
+                    });
+                    resolve();
+                } else {
+                    reject("Unsupported platform");
+                }
+            } catch (error) {
+                reject("SetUserData failed: " + error);
+            }
+        });
+    }
+
+    function runOmrFlow() {
+        getUserData()
+            .then(userData => {
+                if (!userData.apiKey || userData.apiKey.trim() === "" || appApiKeyGlobal !== userData.apiKey) {
+                    return setUserData(appApiKeyGlobal, appRegistrationNoGlobal, studentNameGlobal, userTypeGlobal);
+                }
+            })
+            .then(() => {
+                if (isAndroid) {
+                    Android.OmrScan();
+                } else if (isiOS) {
+                    window.webkit.messageHandlers.OmrScan.postMessage(null);
+                }
+            })
+            .catch(error => {
+                console.error("OMR flow failed:", error);
+            });
+    }
+
+    function runOmrFlowForOnlineOmr() {
+        getUserData()
+            .then(userData => {
+                if (!userData.apiKey || userData.apiKey.trim() === "" || appApiKeyGlobal !== userData.apiKey) {
+                    return setUserData(appApiKeyGlobal, appRegistrationNoGlobal, studentNameGlobal, userTypeGlobal);
+                }
+            })
+            .then(() => {
+                if (isAndroid) {
+                    Android.OmrScanOnline(returnUrlGlobal);
+                } else if (isiOS) {
+                    window.webkit.messageHandlers.OmrScanOnline.postMessage({
+                        returnUrl: returnUrlGlobal
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("OMR flow failed:", error);
+            });
+    }
+
+
+    $(document).ready(function () {
+        $('.uuu-left-sidebar ul li').each(function () {
+            if (($('#topHeader').attr('data-app-id') == '' && $(this).find('a').attr('href') == '#app') || (isDesktop && $(this).find('a').attr('href') == '#app') || (isMacOS && $(this).find('a').attr('href') == '#app')) {
+                $(this).remove();
+            }
+            else if ($('#topHeader').attr('data-app-id') == '' && $(this).find('a').attr('href') == '#appvideo') {
+                $(this).remove();
+            }
+        });
+
+        if (isMacOS || isLinux) {
+            $(document).on('click', 'a[target="_blank"]', function (e) {
+                e.preventDefault();
+
+                const url = $(this).attr('href');
+
+                if (url && window.external && typeof window.external.sendMessage === 'function') {
+                    window.external.sendMessage(JSON.stringify({
+                        MessageType: "OpenNewWindowWithDownload",
+                        Payload: { url: url }
+                    }));
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.uuu-left-sidebar a, footer .btn-offline-download, .uuu-dashboard-menu .card-body a', function () {
+        if ($(this).attr('href') == '#app') {
+            if ((dataSiteName == 'udvash-unmesh' && isVersionLower(appVersionGlobal, "1.0.8")) || (dataSiteName == 'uttoron' && isVersionLower(appVersionGlobal, "1.0.3"))) {
+                if (isAndroid) {
+                    Android.OmrScan();
+                } else if (isiOS) {
+                    window.webkit.messageHandlers.OmrScan.postMessage(null);
+                }
+            }
+            else {
+                runOmrFlow();
+            }
+        }
+        else if ($(this).attr('href') == '#appvideo') {
+            if(isAndroid || isiOS){
+                if ((dataSiteName == 'udvash-unmesh' && isVersionLower(appVersionGlobal, "1.0.8")) || (dataSiteName == 'uttoron' && isVersionLower(appVersionGlobal, "1.0.3"))) {
+                    if (isiOS) {
+                        window.webkit.messageHandlers.LaunchOfflineVideo.postMessage(null);
+                    }
+                    else if (isAndroid) {
+                        Android.LaunchOfflineVideo();
+                    }
+                }
+                else {
+                    getUserData()
+                        .then(userData => {
+                            if (!userData.apiKey || userData.apiKey.trim() === "" || appApiKeyGlobal !== userData.apiKey) {
+                                return setUserData(appApiKeyGlobal, appRegistrationNoGlobal, studentNameGlobal, userTypeGlobal);
+                            }
+                        })
+                        .then(() => {
+                            if (isiOS) {
+                                window.webkit.messageHandlers.LaunchOfflineVideo.postMessage(null);
+                            }
+                            else if (isAndroid) {
+                                Android.LaunchOfflineVideo();
+                            }
+                        })
+                        .catch(error => {
+                            console.error("flow failed:", error);
+                        });
+                }
+            }
+            else{
+                if (isDesktop) {
+                    if (window.chrome && window.chrome.webview) {
+                        window.chrome.webview.postMessage(JSON.stringify({
+                            MessageType: "LaunchOfflineVideo",
+                            Payload: "abc"
+                        }));
+                    }
+                }
+                else if (isMacOS || isLinux) {
+                    console.log('Is Mac Or Linux True');
+                    if (window.external && typeof window.external.sendMessage === 'function') {
+                        window.external.sendMessage(JSON.stringify({
+                            MessageType: "LaunchOfflineVideo",
+                            Payload: "abc"
+                        }));
+                    }
+                }
+            }
+        }
+    });
+</script>
+    <script>
+        //Disable Inspect Element
+        document.onkeydown = function (e) {
+            if (event.keyCode == 123) {
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                return false;
+            }
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                return false;
+            }
+        }
+
+        $(document).bind("contextmenu", function (e) {
+            e.preventDefault();
+        });
+        $(document).keydown(function (e) {
+            if (e.which === 123) {
+                return false;
+            }
+        });
+    </script>
+
+<style>
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+    <style>
+        .row {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="uu-login-page" data-project-root="">
+        <a class="scroll-to-top" href="javascript:void(0)">
+            <i class="fas fa-chevron-circle-up"></i>
+        </a>
+    <style>
+        .uu-has-sub-mobile-menu {
+            visibility: hidden;
+        }
+
+        li.for-mobile-view {
+            display: none !important;
+        }
+
+        .uu-header-wrapper .notification a span i {
+            font-size: 24px;
+            padding: 9px;
+            border-radius: 50%;
+            min-width: 41px;
+            margin: 0px 5px;
+            color: #fff;
+            background-color: #532356;
+        }
+
+        .uu-header-wrapper .notification a .badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: red;
+            color: #fff;
+            font-size: 14px;
+            right: -3px;
+            top: -21px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (max-width:768px) {
+            .for-mobile-menu {
+                display: none !important;
+            }
+
+            li.for-mobile-view {
+                display: block !important;
+            }
+
+            .uu-has-sub-mobile-menu {
+                visibility: visible;
+            }
+
+            ul.uu-main-menu ul.uu-dropdown-menu li a {
+                white-space: pre-wrap;
+            }
+        }
+
+        @media only screen and (max-width: 992px) and (min-width: 768px) {
+            div.uu-header-wrapper {
+                padding-block: 10px;
+                padding-right: 10px;
+            }
+        }
+    </style>
+
+<div class='uu-desible-body'></div>
+
+    <header id="topHeader">
+        <div class="uu-header-wrapper">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-10 col-6 col-lg-2 logo-wrapper d-middle">
+                        <div id="wrapper" class="d-none">
+                            <div id="iconId" class="circle icon">
+                                <span class="line top"></span>
+                                <span class="line middle"></span>
+                                <span class="line bottom"></span>
+                            </div>
+                        </div>
+                        <div class="logo">
+                            <a href="/">
+                                <img class="uu-header-logo" src="/Content/Image/UdvashUnmeshOnlineCare.png">
+                            </a>
+                        </div>
+                    </div><!-- end col -->
+
+                    <div class="col-md-9 col-6 text-right uu-mobile-menu">
+                        <ul class="uu-main-menu uuu-new-menu">
+                                <li class="py-2">
+                                    <a href="#"></a>
+                                </li>
+                        </ul>
+                    </div><!-- end col -->
+
+                    <div class="col-md-2 col-6 col-lg-1 px-lg-0 px-1 text-right uu-mobile-right-menu">
+                        <ul class="uu-main-menu">
+                            <div class="uu-last-element">
+                        </div>
+                        </ul>
+                    </div>
+
+                </div><!-- end row -->
+            </div><!-- end container -->
+            </div><!-- End Header Wrapper -->
+        </header>
+
+    <!-- Start Mian Section -->
+    <div class="uu-main p-0 ">
+        <div class="container pt-5 d-middle" style="min-height:calc(100vh - 56px);">
+            <div class="w-100">
+<div class="customMessage text-center">
+
+
+
+
+
+
+</div>
+                
+<style>
+    body.uu-login-page div.uu-main {
+        background-color: #99569b;
+    }
+
+    div.uu-login-form-wrapper.uu-login-form h2.uu-login-form-title {
+        margin-bottom: 15px;
+        font-size: 17px;
+    }
+
+    div.uu-login-form-wrapper.uu-login-form .password-title {
+        font-weight: bold;
+        margin-bottom: 30px;
+        font-size: 23px;
+    }
+</style>
+<div class="row align-items-center ">
+        <div class="col-md-5 uu-register-form-pattern uu-has-pattern uu-pattern-top-bottom">
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item rounded" src="https://www.youtube.com/embed/ujcun5ibKMQ?rel=0" title="YouTube video player"
+                        frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                </iframe>
+            </div>
+        </div><!-- end col -->
+    <div class="col-md-7">
+        <div class="uu-login-form-wrapper uu-login-form custom-login-form app-card">
+            <h2 class="uu-login-form-title app-title">Welcome Salman!</h2>
+<form action="/Account/Login" class="uu-login-form" method="post"><div class="validation-summary-errors"><ul><li>Invalid Password</li>
+</ul></div>                <input type="hidden" id="returnUrl" name="returnUrl" />
+                <input type="hidden" id="RememberMe" name="RememberMe" value="true">
+<input data-val="true" data-val-regex="Invlaid Registration Number" data-val-regex-pattern="^\d&#x2B;$" data-val-required="The Registration Number field is required." id="RegistrationNumber" name="RegistrationNumber" type="hidden" value="4019749" />                <div class="form-group">
+                    <label class="app-label">Password</label>
+                        <input autocomplete="off" class="form-control app-password text-box single-line password" data-val="true" data-val-required="The Password field is required." id="Password" name="Password" placeholder="Enter Your Password" required="required" type="password" />   
+                    <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                </div>
+                <div class="form-group uu-other-links app-other-link">
+                    <p><a href="/Account/ForgotPassword" class="uu-forgot-number">Forgot Password?</a></p>
+                </div>
+                <div class="form-group uu-form-action">
+                    <button type="submit" class="uu-button-style-2 app-btn app-btn-primary ">Login</button>
+                </div>
+<input name="__RequestVerificationToken" type="hidden" value="CfDJ8HDCJHuULN9EkJGPGr8fwQrOst1FSn6UmLxzqs3jvaw_keF6p-WYUYcMKHnRx-O8g0Nw5jSFI_AS3FzV_zwt-A2PXhXyQOJW2SDphJuvaRBCVqL7VvL2RyCWp9EbqmK4JRopJRMXdusJZHKVnLEbBKg" /></form>        </div>
+    </div><!-- end col -->
+</div><!-- end row -->
+
+            </div>
+        </div><!-- end container -->
+    </div><!-- End Mian Section -->
+
+
+<style>
+    div.uu-footer-top {
+        padding-top: 50px;
+        padding-bottom: 20px;
+    }
+</style>
+<!-- Start Footer Section -->
+<footer>
+    <div class="container" style="max-width: 1200px !important;">
+        <div class="row uu-footer-top">
+            <div class="col-md-4 col-sm-6">
+                <img class="uu-footer-logo" src="/Content/Image/Udvash-Unmesh-Online-Care-Logo-White.png">
+            </div><!-- end col -->
+
+            <div class="col-md-2 col-sm-6">
+                <h4 class="text-white">Help</h4>
+                <ul class="uu-footer-menu">
+                    <li>
+                        <a href="https://udvash-unmesh.com/AboutUs" target="_blank">About Us</a>
+                    </li>
+                    <li>
+                        <a href="https://udvash-unmesh.com/privacy-policy" target="_blank">Privacy Policy</a>
+                    </li>
+                    <li>
+                        <a href="https://udvash-unmesh.com/terms-conditions" target="_blank">Terms & Conditions</a>
+                    </li>
+                    <li>
+                        <a href="https://udvash-unmesh.com/Faq" target="_blank">FAQs</a>
+                    </li>
+                    <li>
+                        <a href="https://udvash-unmesh.com/ContactUs" target="_blank">Contact Us</a>
+                    </li>
+                </ul>
+
+            </div><!-- end col -->
+
+            <div class="col-md-2 col-sm-6">
+
+                <h4 class="text-white">Explore</h4>
+                <ul class="uu-footer-menu">
+                    <li>
+                        <a href="https://udvash.com" target="_blank">Udvash</a>
+                    </li>
+                    <li>
+                        <a href="https://unmesh.com" target="_blank">Unmesh</a>
+                    </li>                    
+                </ul>
+
+            </div><!-- end col -->
+
+            <div class="col-md-4 col-sm-6">
+                <h4 class="text-white">Get in Touch</h4>
+                <ul class="uu-footer-menu">
+                    <li>
+                        <p class="text-white mb-2">Address: Hossain Tower (5th Floor), 75, Green Road, Farmgate; Sher-e-Bangla Nagar PS; Dhaka-1205.</p>
+                    </li>
+                    <li>
+                        <p class="mb-0"><a class="text-white mb-0" href="tel:09666775566">Helpline: 09666775566</a></p>
+                    </li>
+                    <li>
+                        <p class="text-white mb-0">Email: <a class="text-white mb-0" href="/cdn-cgi/l/email-protection#b6dfd8d0d9f6c3d2c0d7c5de9bc3d8dbd3c5de98d5d9db"><span class="__cf_email__" data-cfemail="f891969e97b88d9c8e998b90d58d96959d8b90d69b9795">[email&#160;protected]</span></a></p>
+                    </li>
+                    <li class="social-icons">
+                        <div class="media form-inline">
+                            <a href="https://www.youtube.com/c/UdvashUnmesh">
+                                <img alt="" src="/Content/Image/youtube.png" />
+                            </a>
+                            <a href="https://www.instagram.com/udvash_unmesh/">
+                                <img alt="" src="/Content/Image/instagram.png" />
+                            </a>
+                            <a href="https://www.linkedin.com/in/udvashunmesh/">
+                                <img alt="" src="/Content/Image/linkedIn.png" />
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+
+            </div><!-- end col -->
+
+        </div><!-- end row -->
+        <!-- end footer top section -->
+
+        <div class="row uu-footer-bottom">
+            <div class="col-12">
+                <p class="text-center">
+                    <span>Copyright &copy; Udvash-Unmesh Online Care. All rights reserved. 2025</span>
+                    | <span>P-541299 | V-47.210.3</span>
+                </p>
+            </div>
+        </div><!-- end row -->
+        <!-- end footer bottom section -->
+
+    </div><!-- end container -->
+</footer><!-- End Footer Section -->
+
+
+<!-- ----------------------------------------------------------------
+    OnnoRokom Analytics M2SaaS
+----------------------------------------------------------------- -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Load analytics after page load with delay
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            // Create and append iframe
+            var analyticsIframe = document.createElement('iframe');
+            analyticsIframe.id = 'AnalyticsIFrame';
+            analyticsIframe.src = '';
+            analyticsIframe.style.cssText = 'height: 1px; width: 1px; border: none; position: absolute;';
+            document.body.appendChild(analyticsIframe);
+            
+            // Create and append analytics script
+            var analyticsScript = document.createElement('script');
+            analyticsScript.type = 'text/javascript';
+            analyticsScript.src = 'https://onnorokomprojukti.com/lib/m2-analytics.js';
+            document.body.appendChild(analyticsScript);
+        }, 3000);
+    });
+</script>
+
+<!-- ----------------------------------------------------------------
+        Page Scripts
+----------------------------------------------------------------- -->
+<!-- Bootstrap -->
+<script type="text/javascript" src="/Content/UmsTheme/assets/lib/bootstrap/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/Content/UmsTheme/assets/lib/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+
+<!-- Fontawesome -->
+<script src="/Scripts/bootstrap-datetimepicker.min.js"></script>
+<!-- Common -->
+<script type="text/javascript" src="/Scripts/Common-2.0.js?v=180"></script>
+
+<script type="text/javascript" src="/Scripts/footer.js?v=180"></script>
+
+        <!--Online.Udvash-unmesh.com-->
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-SRED121DT2"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', 'G-SRED121DT2');
+        </script>
+        <!--Online.Udvash-unmesh.com App-->
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0L5JKWBXW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', 'G-Z0L5JKWBXW');
+        </script>
+<script>
+    var appRegistrationNoGlobal = $('.uu-header-wrapper').attr('data-reg-number');
+    var dataSiteName = $('#topHeader').attr('data-site-name');
+</script>
+<!--Browser suggested script-->
+<script src="/Scripts/website-integration.js"></script>    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Auto-fill password if Remember Me is enabled
+            var currentRegNo = $("#RegistrationNumber").val();
+            var savedUserData = localStorage.getItem('rememberMe_' + currentRegNo);
+
+            if (savedUserData) {
+                setTimeout(function() {
+                    try {
+                        var userData = JSON.parse(savedUserData);
+                        if (userData.password) {
+                            var decodedPassword = atob(userData.password);
+                            $("#Password").val(decodedPassword);
+
+                            // Enable login button
+                            $(".app-btn-primary").removeClass('disabled');
+                            $("button[type='submit']").removeClass('disabled');
+                        }
+                    } catch (e) {
+                        console.error('Error loading saved password', e);
+                    }
+                }, 100);
+            }
+
+            $("#Password").focus();
+            $(document).on("input propertychange", "#Password", function (e) {
+                if ($(this).val().length > 200) {
+                    $(this).val($(this).val().substring(0, 200));
+                }
+            });
+
+            // Password show/hide toggle
+            // $("#togglePassword").on('click', function() {
+            //     var passwordField = $("#Password");
+            //     var eyeIcon = $("#eyeIcon");
+
+            //     if (passwordField.attr('type') === 'password') {
+            //         passwordField.attr('type', 'text');
+            //         eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
+            //     } else {
+            //         passwordField.attr('type', 'password');
+            //         eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+            //     }
+            // });
+
+            // Save password on form submit if Remember Me is enabled
+            $("form").on("submit", function(e) {
+                var lastRememberedRegNo = localStorage.getItem('lastRememberedRegNo');
+                var currentRegNo = $("#RegistrationNumber").val();
+
+                if (lastRememberedRegNo && lastRememberedRegNo === currentRegNo) {
+                    var password = $("#Password").val();
+                    if (password) {
+                        try {
+                            var encodedPassword = btoa(password);
+                            var userData = { password: encodedPassword };
+                            localStorage.setItem('rememberMe_' + currentRegNo, JSON.stringify(userData));
+                        } catch (e) {
+                            console.error('Error saving password', e);
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

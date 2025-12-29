@@ -28,4 +28,7 @@ interface UdvashApi {
 
     @GET("Routine/PastClasses")
     suspend fun getPastClasses(): Response<String>
+
+    @GET("Content/Index?id=2")
+    suspend fun getCourseContentPage(): Response<String>
 }

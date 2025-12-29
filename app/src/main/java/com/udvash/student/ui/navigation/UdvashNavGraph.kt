@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.udvash.student.ui.screens.classes.ClassListScreen
+import com.udvash.student.ui.screens.course.CourseContentScreen
 import com.udvash.student.ui.screens.dashboard.DashboardScreen
 import com.udvash.student.ui.screens.login.LoginScreen
 
@@ -21,6 +22,9 @@ fun UdvashNavGraph() {
         }
         composable(Screen.PastClasses.route) {
             ClassListScreen(navController = navController)
+        }
+        composable(Screen.CourseContent.route) {
+            CourseContentScreen(navController = navController)
         }
     }
 }

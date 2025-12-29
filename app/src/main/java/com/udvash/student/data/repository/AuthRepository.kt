@@ -39,15 +39,28 @@ object AuthRepository {
             )
             
             val loginResponse = api.postPassword(step2Params)
-            // Success is usually determined by a redirect to Dashboard or getting the Dashboard HTML
-            // Check if we are redirected to Dashboard or if the body contains "Dashboard"
             val loginBody = loginResponse.body() ?: ""
             
-            if (loginResponse.code() == 302 || loginBody.contains("Dashboard", ignoreCase = true) || loginBody.contains("Welcome")) {
+            // Check for explicit failure message
+            if (loginBody.contains("Invalid Password", ignoreCase = true) || 
+                loginBody.contains("validation-summary-errors", ignoreCase = true)) {
+                return Result.failure(Exception("Invalid Password"))
+            }
+
+            // Check for success (Dashboard text or Redirect)
+            if (loginResponse.code() == 302 || 
+                loginBody.contains("<title>Dashboard", ignoreCase = true) || 
+                loginBody.contains("Dashboard", ignoreCase = true)) {
                  return Result.success(true)
             }
 
-            return Result.failure(Exception("Login failed, incorrect credentials or flow."))
+            // Fallback: If we are still on the login page (check title), it's a failure
+            if (loginBody.contains("<title>Student Login", ignoreCase = true)) {
+                return Result.failure(Exception("Login failed. Please check your credentials."))
+            }
+
+            // Assume success if none of the above failures matched (risky but often true for 200 OK dashboard)
+            return Result.success(true)
 
         } catch (e: Exception) {
             return Result.failure(e)

@@ -24,63 +24,54 @@ object ClassRepository {
     private fun parseClasses(html: String): List<ClassItem> {
         val doc = Jsoup.parse(html)
         val items = mutableListOf<ClassItem>()
+        val baseUrl = "https://online.udvash-unmesh.com"
 
-        // NOTE: Selectors need to be adjusted based on actual HTML structure of /Routine/PastClasses.
-        // Assuming a standard table or list structure based on common Udvash themes.
-        // Since I don't have the PastClasses HTML, I will use generic robust selectors 
-        // that likely match their card/list layout.
+        val cards = doc.select(".uu-routine-item")
         
-        val cards = doc.select(".card, .class-item, .uu-card") // Fallback selectors
-        
-        // If specific structure is unknown, we look for containers with dates and 'View' buttons
-        // For now, I'll assume a structure similar to what is typical for Bootstrap/their theme
-        
-        // Placeholder parsing logic - intended to be refined with real HTML
-        // Looking for rows in a table or divs
-        val rows = doc.select("tr")
-        if (rows.isNotEmpty()) {
-             for (row in rows) {
-                 val cols = row.select("td")
-                 if (cols.size >= 3) {
-                     val date = cols[0].text()
-                     val title = cols[1].text()
-                     // Extract links
-                     val videoLink = row.select("a[href*='video'], a[href*='player']").attr("href")
-                     val pdfLink = row.select("a[href*='.pdf']").attr("href")
-                     
-                     if (title.isNotEmpty()) {
-                         items.add(ClassItem(
-                             title = title,
-                             date = date,
-                             subject = "", 
-                             videoUrl = if (videoLink.isNotEmpty()) videoLink else null,
-                             lectureNoteUrl = if (pdfLink.isNotEmpty()) pdfLink else null,
-                             practiceNoteUrl = null
-                         ))
-                     }
-                 }
-             }
-        }
-        
-        // If table parsing yielded nothing, try card based (common in mobile views)
-        if (items.isEmpty()) {
-            val divs = doc.select("div[class*=card]")
-            for (div in divs) {
-                val title = div.select("h4, h5, .title").text()
-                val date = div.select(".date, span:matches(\\d)").text()
-                val links = div.select("a")
-                var videoUrl: String? = null
-                var noteUrl: String? = null
-                
-                for (link in links) {
-                    val href = link.attr("href")
-                    if (href.contains("video") || href.contains("play")) videoUrl = href
-                    if (href.endsWith(".pdf")) noteUrl = href
+        for (card in cards) {
+            val title = card.select(".uu-routine-title").text().trim()
+            
+            // Extract Date: Find h4 that contains "Date & Time"
+            var date = ""
+            val h4s = card.select("h4")
+            for (h4 in h4s) {
+                if (h4.text().contains("Date & Time", ignoreCase = true)) {
+                    // Remove the label "Date & Time" to get just the value
+                    date = h4.ownText().trim() 
+                    // If ownText is empty (sometimes it's in a span or text node next to span), try replacing
+                    if (date.isEmpty()) {
+                        date = h4.text().replace("Date & Time", "").trim()
+                    }
+                    break
                 }
-                
-                if (title.isNotEmpty()) {
-                    items.add(ClassItem(title, date, "", videoUrl, noteUrl, null))
+            }
+
+            // Links
+            val links = card.select(".uu-routine-item-footer a")
+            var videoUrl: String? = null
+            var noteUrl: String? = null
+
+            for (link in links) {
+                val href = link.attr("href")
+                val text = link.text().trim()
+                val fullUrl = if (href.startsWith("http")) href else "$baseUrl$href"
+
+                if (text.equals("Video", ignoreCase = true) || href.contains("videoId")) {
+                    videoUrl = fullUrl
+                } else if (text.equals("Notes", ignoreCase = true) || href.contains("isNotes=true")) {
+                    noteUrl = fullUrl
                 }
+            }
+
+            if (title.isNotEmpty()) {
+                items.add(ClassItem(
+                    title = title,
+                    date = date,
+                    subject = "", // Subject is mixed in the body, complex to parse simply, skipping for now
+                    videoUrl = videoUrl,
+                    lectureNoteUrl = noteUrl,
+                    practiceNoteUrl = null // No separate practice note link found in footer
+                ))
             }
         }
 
