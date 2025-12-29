@@ -1,15 +1,15 @@
-name: Android Build
+name: Android Build & Release
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout
@@ -29,8 +29,22 @@ jobs:
     - name: Build with Gradle
       run: gradle assembleDebug --stacktrace
 
-    - name: Upload APK
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Create Release
+      if: success()
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0-${{ github.run_number }}
+        name: Udvash Client v1.0.${{ github.run_number }}
+        body: |
+          ### 🚀 Automated Build
+          - **Status:** Debug Build
+          - **Commit:** ${{ github.sha }}
+        files: app/build/outputs/apk/debug/app-debug.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
